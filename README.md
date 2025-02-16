@@ -1,5 +1,3 @@
-# TextGeneration-TFLite
-
 # Text Generation Model Optimization & Mobile Deployment (TensorFlow Lite, RNN)
 
 ## Project Overview
