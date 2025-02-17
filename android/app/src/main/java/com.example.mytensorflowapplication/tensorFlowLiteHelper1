@@ -1,0 +1,44 @@
+package com.example.mytensorflowapplication;
+import android.content.Context;
+import org.tensorflow.lite.Interpreter;
+import android.content.res.AssetFileDescriptor;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+
+public class tensorFlowLiteHelper1 {
+    private Interpreter tflite;
+
+    public tensorFlowLiteHelper1(Context context) {
+        try {
+            // Load the TensorFlow Lite model
+            Interpreter.Options options = new Interpreter.Options();
+            this.tflite = new Interpreter(loadModelFile(context), options);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Method to load the model file from assets
+    private ByteBuffer loadModelFile(Context context) throws IOException {
+        AssetFileDescriptor fileDescriptor = context.getAssets().openFd("text_gen_model.tflite");
+        FileInputStream inputStream = fileDescriptor.createInputStream();
+        FileChannel fileChannel = inputStream.getChannel();
+        long startOffset = fileDescriptor.getStartOffset();
+        long declaredLength = fileDescriptor.getDeclaredLength();
+        return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength);
+    }
+
+    // Run inference
+    public float[] runInference(float[] inputData) {
+        float[][] outputData = new float[1][256]; // Adjust size based on model
+        tflite.run(inputData, outputData);
+        return outputData[0];
+    }
+
+    // Close interpreter
+    public void close() {
+        tflite.close();
+    }
+}
